@@ -4,3 +4,454 @@
 // require    - funtion to use module(CommonJS)
 // module     - info about current module (file)
 // process    - info about env where the program is being executed
+
+---------------------------------------------------------------------------------------------
+
+// npm - global command, comes with node
+// npm --version   
+
+// local dependancy - use it only in this particular project
+// npm i <packageName>
+
+// global dependancy - use it in any project
+// npm install -g <packageName>
+// sudo npm install -g <packageName> (mac)
+
+// package.json - manifest file (stores important info about project/package)
+// manual approach (create package.json in the root, create properties etc)
+// npm init (step by step, press enter to skip)
+// npm init -y (everything default)
+
+---------------------------------------------------------------
+INSTALLING NODEMON LOCALLY
+1. npm i nodemon -D
+2. npm i nodemon --save-dev
+
+----------Running the App-------------
+1. node app.js
+2. npm start => after installing nodemon
+3. npm run dev => runs automatically on save
+set this on package.json:
+    "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  }
+
+or:
+    "scripts": {
+    "start": "nodemon app.js",
+  }
+
+INSTALLING NODEMON GLOBALLY
+sudo npm install -g nodemon
+
+
+________________________ EVENTS _______________________________________
+
+Event-Driven programming: a style in which the flow of a program is atleast in part determined by 
+the events that occure as the program executes.
+
+Used heavily in Node.js
+
+SETTING OUR OWN EVENTS IN NODE
+
+`````js
+const EventEmitter = require('events);
+
+// creating an instance of EventEmitter class
+const customEmitter = new EventEmitter();
+
+/*
+some of the methods in customEmitter object:
+1. on - listen for an event.
+2. emit - emit an event.
+*/
+
+customEmitter.on('response',()=>{
+  console.log(`Data received');
+})
+
+customEmitter.emit('response)
+
+// this is a basic setup for events.
+
+``````
+
+WE CAN HAVE MANY FUNCTIONS/METHODS LISTENING TO AN EVENT
+1. We can have many functions.methods listening to an event.
+2. The order of 'on' and 'emit' matters
+
+`````js
+const EventEmitter = require('events);
+
+const customEmitter = new EventEmitter();
+
+customEmitter.on('response',()=>{
+  console.log(`Data received');
+})
+
+customEmitter.on('response',()=>{
+  console.log(`Some other logic');
+})
+
+customEmitter.emit('response)
+
+``````
+
+3. We can pass arguments when emitting events
+
+`````js
+const EventEmitter = require('events);
+
+const customEmitter = new EventEmitter();
+
+customEmitter.on('response',(name, id)=>{
+  console.log(`Data received user ${name} with id: ${id}`);
+})
+
+customEmitter.on('response',()=>{
+  console.log(`Some other logic`);
+})
+
+customEmitter.emit('response', 'John', 34)
+
+``````
+
+
+CREATING SERVER
+````js
+const http = require("http");
+
+// const server = http.createServer((req, res) => {
+//   res.end('Welcome')
+// })
+
+// Using Event Emitter API
+const server = http.createServer();
+// emits request event
+// subcribe to it / listen for it / respond to it
+server.on("request", (req, res) => {
+  res.end("Welcome");
+});
+
+server.listen(5000);
+
+``````
+
+STREAMS
+Types of streams in Node.js
+- Writebale: Used to write data sequentially.
+- Readable: Used to read data sequentially.
+- Duplex: Both read and write data sequentially.
+- Transform: Data can be modified when writing or reading.
+
+Creating a big file 
+`````js
+const {writeFileSync}=require('fs')
+
+for(let i = 0; i <= 10000; i++){
+  writeFileSync('./content/big-file.txt', `Hello World ${i} \n`)
+}
+
+``````
+
+// default 64kb
+// last buffer - remainder
+// highWaterMark - control size
+// const stream = createReadStream('./content/big.txt', { highWaterMark: 90000 })
+// const stream = createReadStream('../content/big.txt', { encoding: 'utf8' })
+
+``````js
+const { createReadStream } = require("fs");
+const stream = createReadStream("./content/big.txt");
+
+stream.on("data", (result) => {
+  console.log(result);
+});
+
+stream.on("error", (err) => console.log(err));
+````````
+
+Creating even more big file 
+`````js
+const {writeFileSync}=require('fs')
+
+for(let i = 0; i <= 100000; i++){
+  writeFileSync('./content/big-file.txt', `Hello World ${i} \n`)
+}
+``````
+
+
+````````````````````````````````````````````````````
+
+
+
+
+
+
+````````````````````````````````````````````````````````
+
+CREATING SERVERS
+Structure of http message
+1. start line.
+2. Headers(optional)
+3. Body(optional)
+
+Headers are key - value pair
+
+http methods
+1. GET: Read data
+2. POST: Insert data
+3. PUT: Update data
+4. DELETE: Delete data
+
+npm install to install express in package.json
+
+setting up the server
+```js
+const http = require('http')
+
+const server = http.createServer((res,req)=>{
+
+})
+
+server.listen(5000)
+````
+
+Port: communication endpoint
+Specific ports are for specific things you want to do.
+In local development you can use any number.
+
+response.end(): This methods signals to the server that all of the response headers and body have been sent;
+that the server should consider this message complete. The method response.end(), must be called on each response.
+
+```js
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+  res.end("Home page");
+});
+
+server.listen(5000);
+```
+
+The response object
+Providing info about the data we are sending back.
+1. Providing headers
+- Contain status code.
+- Object with content type.
+- 
+
+```js
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200,{'content-type':'text/html'})
+  res.end("<h1>Home page</h1>");
+});
+
+server.listen(5000);
+```
+
+
+You can also pass the content-type in: res.write()
+
+```js
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200,{'content-type':'text/html'})
+  res.write("<h1>Home page</h1>");
+  res.end()
+});
+
+server.listen(5000);
+```
+
+
+If you change content-type to text/plain it will be treated as a plain text.
+```js
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200,{'content-type':'text/plain'})
+  res.end("<h1>Home page</h1>");
+});
+
+server.listen(5000);
+```
+
+You must use to status code to reflect what is happening with the response.
+
+THE REQUEST OBJECT
+By default the request method is GET
+
+```js
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+  console.log(req.method)
+  res.writeHead(200,{'content-type':'text/plain'})
+  res.end("<h1>Home page</h1>");
+});
+
+server.listen(5000);
+```
+
+
+Getting url the user is requesting; req.url
+```js
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+
+  // Home page
+  if(req.url === '/'){
+    res.writeHead(200,{'content-type':'text/plain'})
+    res.end("<h1>Home page</h1>");
+  }
+  // About page
+  else if(req.url === '/about'){
+    res.writeHead(200,{'content-type':'text/plain'})
+    res.end("<h1>About page</h1>");
+  }
+  // 404 Not found
+  else{
+    res.writeHead(404,{'content-type':'text/plain'})
+    res.end("<h1>Page Not found</h1>");
+  }
+});
+
+server.listen(5000);
+```
+
+USING A SEPARATE HTML FILE
+- Create a html file: index.html
+- Use the readFileSync to read the html file.
+- In this case it is preffered to use the blocking readFileSync(). because we require that file when 
+  instanciating the server.
+- Store it in a variable i.e homePage
+- in res.end use the homePage
+
+
+```js
+const http = require("http");
+const { readFileSync } = require("fs");
+const homePage = readFileSync("./index.html", "utf-8");
+
+const server = http.createServer((req, res) => {
+  console.log(req.url);
+  if (req.url === "/") {
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end(homePage);
+  } else if (req.url === "/about") {
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end("<h1>About page</h1>");
+  } else {
+    res.writeHead(404, { "content-type": "text/html" });
+    res.end("<h1>Oops Page not found</h1>");
+  }
+});
+server.listen(5000);
+
+````
+
+
+USING THE FILES CREATED IN navbar-app directory
+- Navigate to navbar-app folder: './navbar-app/index.html'
+- Now replace the path in the readFileSync to './navbar-app/index.html' 
+
+
+```js
+const http = require("http");
+const { readFileSync } = require("fs");
+const homePage = readFileSync("./navbar-app/index.html", "utf-8");
+
+const server = http.createServer((req, res) => {
+  console.log(req.url);
+  if (req.url === "/") {
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end(homePage);
+  } else if (req.url === "/about") {
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end("<h1>About page</h1>");
+  } else {
+    res.writeHead(404, { "content-type": "text/html" });
+    res.end("<h1>Oops Page not found</h1>");
+  }
+});
+
+server.listen(5000);
+
+````
+
+
+
+We ave to manually request all the files need by index.html
+- We will store them in variables.
+- Create another if block for home '/' and use the resources stored in the variables.
+- For images the content-type is 'image/svg+xml'
+
+```js
+const http = require("http");
+const { readFileSync } = require("fs");
+const homePage = readFileSync("./navbar-app/index.html", "utf-8");
+const homeStyles = readFileSync("./navbar-app/styles.css", "utf-8");
+const homeImage = readFileSync("./navbar-app/logo.svg", "utf-8");
+const homeLogic = readFileSync("./navbar-app/browser-app.js", "utf-8");
+
+
+const server = http.createServer((req, res) => {
+  console.log(req.url);
+  //   Home page
+  if (req.url === "/") {
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end(homePage);
+  }
+  //   About Page
+  else if (req.url === "/about") {
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end("<h1>About page</h1>");
+  }
+  // Styles
+  else if (req.url === "/styles.css") {
+    res.writeHead(200, { "content-type": "text/css" });
+    res.end(homeStyle);
+  }
+  // Styles
+  else if (req.url === "/logo.svg") {
+    res.writeHead(200, { "content-type": "image/svg+xml" });
+    res.end(homeImage);
+  }
+  // Styles
+  else if (req.url === "/browser-app.js") {
+    res.writeHead(200, { "content-type": "text/javascript" });
+    res.end(homeLogic);
+  }
+  //   404 Not Found
+  else {
+    res.writeHead(404, { "content-type": "text/html" });
+    res.end("<h1>Oops Page not found</h1>");
+  }
+});
+
+server.listen(5000);
+````
+
+
+EXPRESS
+- Is a minimal and flexible Node.js web app framework that provides a robust set of features for web and
+mobile applications.
+- It is a standard when creating web applications with Node.
+
+installation
+--save: is optional
+$ npm install express --save
+
+installing the same version as used in tutorial
+$ npm install express@4.17.1 --save
+
+
+WORKING WITH EXPRESS
+```js
+````
